@@ -39,6 +39,9 @@ salmon_model <- lm(salmon_fresh ~ year, data = salmon)
 
 salmon_model
 ```
+Model equation: imports(tons) = 7550x + -14982940  
+Slope: 
+
 
 
 
