@@ -1,0 +1,46 @@
+---
+title: "Salmon lab"
+author: "An Bui"
+date: "21 November 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+##### 1-3. Set up
+```{r set up packages and csv, include = FALSE}
+library(tidyverse)
+
+salmon <- read_csv("salmon_imports.csv")
+```
+
+##### 4. Exploratory scatterplot
+```{r exploratory qqplot, include = FALSE}
+salmon_qq <- ggplot(salmon, aes(sample = salmon_fresh)) +
+  geom_qq()
+
+salmon_qq
+# seems linear
+```
+
+```{r exploratory scatterplot, echo = FALSE}
+salmon_scatter <- ggplot(salmon, aes(x = year, y = salmon_fresh)) +
+  geom_point()
+
+salmon_scatter
+# generally linear, with some outliers? linear regression still makes sense though
+```
+
+##### 5. Linear regression in R
+```{r linear regression, include = FALSE}
+# do a linear regression of pounds of salmon per year from data frame salmon
+salmon_model <- lm(salmon_fresh ~ year, data = salmon)
+
+salmon_model
+```
+
+
+
+
+
