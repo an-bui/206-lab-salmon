@@ -33,16 +33,53 @@ salmon_scatter
 ```
 
 ##### 5. Linear regression in R
-```{r linear regression, include = FALSE}
+```{r linear regression}
 # do a linear regression of pounds of salmon per year from data frame salmon
 salmon_model <- lm(salmon_fresh ~ year, data = salmon)
 
 salmon_model
 ```
 Model equation: imports(tons) = 7550x + -14982940  
-Slope: 
+Slope: 7550 (what does this mean??)  
+Intercept: At year 0, -14972940 pounds of salmon will be harvested a year. This is obviously unrealistic, so this model is not the best fit for extrapolating past values.  
 
+##### 6. Model diagnostics
+```{r model diagnostics}
+par(mfrow = c(2,2))
 
+plot(salmon_model)
+```
+- Residuals vs Fitted: looks homoscedastic  
+- QQ plot: residuals are normally distributed  
+- Scale-Location: how to explain?  
+- Residuals vs Leverage: points 24 and 28 are influencing the model  
+
+##### 7. Explore model fit and significance
+```{r model summary}
+summary(salmon_model)
+```
+- _Does year significantly predict salmon imports?_ Year predicts 94% of variance in salmon imports (_p_ < 0.001).  
+- _What does the R^2^ value actually mean in words?_ 94% of variance in salmon imports is predicted by year.  
+- _What proportion of the variation in salmon imports is NOT explained by year?_ 6% of the variation in salmon imports is not explained by year.  
+
+##### 8. Prepare a final graph. 
+```{r final graph, echo = FALSE}
+final_x = "Year"
+final_y = "US Annual Fresh Salmon Imports (1 000 pounds)"
+
+final_graph <- ggplot(salmon, aes(x = year, y = salmon_fresh)) +
+  geom_point() +
+  geom_smooth(method = lm, 
+              se = TRUE, 
+              size = 0.5, 
+              color = "gray20") +
+  theme_bw() +
+  scale_x_continuous(expand = c(0,0), limits = c(1990, 2017)) +
+  labs(x = final_x, y = final_y)
+
+final_graph
+
+```
 
 
 
