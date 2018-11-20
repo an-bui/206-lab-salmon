@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ##### 1-3. Set up
 ```{r set up packages and csv, include = FALSE}
 library(tidyverse)
+library(kableExtra)
 
 salmon <- read_csv("salmon_imports.csv")
 ```
@@ -44,11 +45,12 @@ Slope: 7550 (what does this mean??)
 Intercept: At year 0, -14972940 pounds of salmon will be harvested a year. This is obviously unrealistic, so this model is not the best fit for extrapolating past values.  
 
 ##### 6. Model diagnostics
-```{r model diagnostics}
+```{r model diagnostics, echo = FALSE}
 par(mfrow = c(2,2))
 
 plot(salmon_model)
 ```
+
 - Residuals vs Fitted: looks homoscedastic  
 - QQ plot: residuals are normally distributed  
 - Scale-Location: how to explain?  
@@ -58,6 +60,7 @@ plot(salmon_model)
 ```{r model summary}
 summary(salmon_model)
 ```
+
 - _Does year significantly predict salmon imports?_ Year predicts 94% of variance in salmon imports (_p_ < 0.001).  
 - _What does the R^2^ value actually mean in words?_ 94% of variance in salmon imports is predicted by year.  
 - _What proportion of the variation in salmon imports is NOT explained by year?_ 6% of the variation in salmon imports is not explained by year.  
@@ -80,6 +83,55 @@ final_graph <- ggplot(salmon, aes(x = year, y = salmon_fresh)) +
 final_graph
 
 ```
+
+##### 9. Make predictions using the model
+What will salmon imports look like in 2022, 2024, 2026, and 2028?
+```{r predictions, include = FALSE}
+# make data frame of with sequence of years that you want to make predictions for
+# write in column name that is the same as the variable name 'year' that the model uses
+new_years <- data.frame(year = c(2022, 2024, 2026, 2028))
+
+# use predict() to create table of predicted values
+future_predict <- predict(salmon_model, newdata = new_years, interval = "confidence")
+
+future_predict
+
+# bind prediction outcomes with new_years data
+predictions <- data.frame(new_years, future_predict)
+
+predictions
+```
+
+```{r table, echo = FALSE}
+# put a table on it
+table_caption = "**Table 1. Salmon import predictions.** Predictions of salmon imports (1 000 pounds) using linear mixed model for 2022, 2024, 2026, and 2028. Limits are within ± 95% CI."
+table_columns = c("Year", "Predicted value", "Lower limit", "Upper limit")
+
+kable(predictions,
+      col.names = table_columns,
+      caption = table_caption) %>% 
+  kable_styling(bootstrap_options = "striped")
+```
+
+##### 10. Find Pearson's _r_ using cor.test()
+```{r find r, include = FALSE}
+salmon_cor <- cor.test(salmon$year, salmon$salmon_fresh)
+
+salmon_cor
+```
+There is a strong positive correlation between year and salmon imports (1 000s pounds, Pearson's _r_ = `r round(salmon_cor$estimate, 2)`). The model (_salmon imports_ = 7550 * (_year_) + -14982940) explains a significant amount of variance in salmon imports (F(`r salmon_model$df.residual`) = 471.9, _p_ < 0.001, _R^2^_ = 0.95).
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
